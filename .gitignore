@@ -1,0 +1,8 @@
+node_modules
+dist
+media
+.DS_Store
+yarn.lock
+yarn-error.log
+dist.crx
+dist.pem
