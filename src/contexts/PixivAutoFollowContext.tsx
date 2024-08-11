@@ -1,3 +1,4 @@
+import { sleep } from "@src/utils/sleep";
 import {
   createContext,
   useContext,
@@ -32,6 +33,7 @@ interface PixivAutoFollowContextProps {
   setNotificationMessage: Setter<string>;
   startAutoFollow: (illustId: string, overlay: HTMLElement) => void;
   stopAutoFollow: () => void;
+  followUserOnUI: () => void;
 }
 
 // コンテキストの作成
@@ -47,7 +49,7 @@ export const PixivAutoFollowProvider = (props: { children: JSX.Element }) => {
     total: 0,
     progress: 0,
   });
-  const [interval, setInterval] = createSignal(1000);
+  const [interval, setInterval] = createSignal(4000);
   const [isRunning, setIsRunning] = createSignal(false);
   const [notificationMessage, setNotificationMessage] = createSignal("");
   let activeOverlay: HTMLElement | null = null;
@@ -197,16 +199,11 @@ export const PixivAutoFollowProvider = (props: { children: JSX.Element }) => {
         });
 
         if (!isFollowed) {
-          await new Promise((resolve) => setTimeout(resolve, interval()));
-          const success = await followUser(illustId, userId, token);
-          if (success) {
-            setNotificationMessage(`${userName}をフォロー成功`);
-          } else {
-            setNotificationMessage("フォロー処理失敗");
-          }
+          window.open(`https://www.pixiv.net/users/${userId}#follow`);
+          await sleep(interval());
         }
 
-        await new Promise((resolve) => setTimeout(resolve, 30));
+        await sleep(30);
       }
     }
 
@@ -221,6 +218,20 @@ export const PixivAutoFollowProvider = (props: { children: JSX.Element }) => {
     if (activeOverlay) {
       activeOverlay.style.display = "none"; // 停止時にオーバーレイを非表示
     }
+  };
+
+  const followUserOnUI = async () => {
+    console.log(`address = ${location.href}}`);
+    if (/#follow/.test(location.href)) {
+      console.log("follow");
+      (
+        document.querySelector(
+          "button[data-click-label*='follow']"
+        ) as HTMLElement
+      )?.click();
+    }
+    await sleep(1000);
+    window.close();
   };
 
   return (
@@ -238,6 +249,7 @@ export const PixivAutoFollowProvider = (props: { children: JSX.Element }) => {
         setNotificationMessage,
         startAutoFollow,
         stopAutoFollow,
+        followUserOnUI,
       }}
     >
       {props.children}

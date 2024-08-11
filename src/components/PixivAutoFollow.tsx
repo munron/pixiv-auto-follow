@@ -9,6 +9,7 @@ const PixivAutoFollowUI = () => {
     interval,
     setInterval,
     notificationMessage,
+    followUserOnUI,
   } = usePixivAutoFollow();
 
   const insertAutoFollowButton = () => {
@@ -75,6 +76,7 @@ const PixivAutoFollowUI = () => {
   // コンポーネントのマウント時にボタンを挿入
   onMount(() => {
     insertAutoFollowButton();
+    followUserOnUI();
   });
 
   return (
